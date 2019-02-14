@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+
+
+#%%
+import os
+from ruamel.yaml import YAML
+
+
+#%%
+yaml = YAML(typ='safe')
+
+
+#%%
+cwl = None
+with open('slide-tiles.cwl.yml') as f:
+    cwl = yaml.load(f)
+
+
+#%%
+ssh_host = 'avocado01.f4.htw-berlin.de'
+ssh_setdir = '/data/ldap/camelyon/camelyon_new_downloaded_2019_02_06/CAMELYON16/'
+
+# normal_086.tif does not exist in dataset
+# normal_144.tif cannot be processed
+subsets = {
+    'training': {
+        'tumor': {
+            'scanner1': {
+                'slides': ['training/tumor/tumor_{:03d}.tif'.format(i) for i in range(1, 71)],
+                'masks': ['training/lesion_annotations/tumor_{:03d}.xml'.format(i) for i in range(1, 71)],
+                'tiles': ['tiles/training/tumor_{:03d}.hdf5'.format(i) for i in range(1, 71)]
+            },
+            'scanner2': {
+                'slides': ['training/tumor/tumor_{:03d}.tif'.format(i) for i in range(71, 112)],
+                'masks': ['training/lesion_annotations/tumor_{:03d}.xml'.format(i) for i in range(71, 112)],
+                'tiles': ['tiles/training/tumor_{:03d}.hdf5'.format(i) for i in range(71, 112)]
+            }
+        },
+        'normal': {
+            'scanner1': {
+                'slides': ['training/normal/normal_{:03d}.tif'.format(i) for i in range(1, 101) if i != 86],
+                'tiles': ['tiles/training/normal_{:03d}.hdf5'.format(i) for i in range(1, 101) if i != 86]
+            },
+            'scanner2': {
+                'slides': ['training/normal/normal_{:03d}.tif'.format(i) for i in range(101, 161) if i != 144],
+                'tiles': ['tiles/training/normal_{:03d}.hdf5'.format(i) for i in range(101, 161) if i != 144]
+            }
+        }
+    }
+}
+
+red = {
+    'redVersion': '6',
+    'cli': cwl,
+    'batches': [],
+    'container': {
+        'engine': 'docker',
+        'settings': {
+            'image': {
+                'url': 'docker.io/deepprojects/camelyon-utils:0.1'
+            },
+            'ram': 8192
+        }
+    },
+    'execution': {
+        'engine': 'ccagency',
+        'settings': {
+            'access': {
+                'url': 'https://agency.f4.htw-berlin.de/cctest',
+                'auth': {
+                    'username': '{{agency_username}}',
+                    'password': '{{agency_password}}'
+                }
+            },
+            'retryIfFailed': True,
+            'batchConcurrencyLimit': 16
+        }
+    }
+}
+
+for subset_name, subset in subsets.items():
+    for target_name, target in subset.items():
+        for scanner_name, scanner in target.items():
+            slides = scanner['slides']
+            masks = scanner.get('masks')
+            tiles = scanner['tiles']
+
+            if target_name == 'tumor':
+                for slide, mask, tile in zip(slides, masks, tiles):
+                    slide_dir, slide_name = os.path.split(slide)
+                    mask_dir, mask_name = os.path.split(mask)
+                    tile_dir, tile_name = os.path.split(tile)
+                    inp = {
+                        'slide': {
+                            'class': 'File',
+                            'connector': {
+                                'command': 'red-connector-ssh',
+                                'access': {
+                                    'host': ssh_host,
+                                    'username': '{{cbmi_username}}',
+                                    'password': '{{cbmi_password}}',
+                                    'fileDir': os.path.join(ssh_setdir, slide_dir),
+                                    'fileName': slide_name
+                                }
+                            }
+                        },
+                        'mask': {
+                            'class': 'File',
+                            'connector': {
+                                'command': 'red-connector-ssh',
+                                'access': {
+                                    'host': ssh_host,
+                                    'username': '{{cbmi_username}}',
+                                    'password': '{{cbmi_password}}',
+                                    'fileDir': os.path.join(ssh_setdir, mask_dir),
+                                    'fileName': mask_name
+                                }
+                            }
+                        }
+                    }
+                    if scanner_name == 'scanner2':
+                        inp['second_scanner'] = True
+
+                    out = {
+                        'tiles': {
+                            'class': 'File',
+                            'connector': {
+                                'command': 'red-connector-ssh',
+                                'access': {
+                                    'host': ssh_host,
+                                    'username': '{{cbmi_username}}',
+                                    'password': '{{cbmi_password}}',
+                                    'fileDir': os.path.join(ssh_setdir, tile_dir),
+                                    'fileName': tile_name
+                                }
+                            }
+                        }
+                    }
+
+                    red['batches'].append({'inputs': inp, 'outputs': out})
+            else:
+                for slide, tile in zip(slides, tiles):
+                    slide_dir, slide_name = os.path.split(slide)
+                    tile_dir, tile_name = os.path.split(tile)
+                    inp = {
+                        'slide': {
+                            'class': 'File',
+                            'connector': {
+                                'command': 'red-connector-ssh',
+                                'access': {
+                                    'host': ssh_host,
+                                    'username': '{{cbmi_username}}',
+                                    'password': '{{cbmi_password}}',
+                                    'fileDir': os.path.join(ssh_setdir, slide_dir),
+                                    'fileName': slide_name
+                                }
+                            }
+                        }
+                    }
+                    if scanner_name == 'scanner2':
+                        inp['second_scanner'] = True
+
+                    out = {
+                        'tiles': {
+                            'class': 'File',
+                            'connector': {
+                                'command': 'red-connector-ssh',
+                                'access': {
+                                    'host': ssh_host,
+                                    'username': '{{cbmi_username}}',
+                                    'password': '{{cbmi_password}}',
+                                    'fileDir': os.path.join(ssh_setdir, tile_dir),
+                                    'fileName': tile_name
+                                }
+                            }
+                        }
+                    }
+
+                    red['batches'].append({'inputs': inp, 'outputs': out})
+
+with open('slide-tiles.red.yml', 'w') as f:
+    yaml.dump(red, f)
+
+print(len(red['batches']))

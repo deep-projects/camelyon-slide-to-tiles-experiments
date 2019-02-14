@@ -1,0 +1,30 @@
+cwlVersion: v1.0
+class: CommandLineTool
+baseCommand:
+  - camelyon-utils
+  - slide-tiles
+doc: "CAMELYON Utils is a set of tools to process slides of the CAMELYON image database."
+
+inputs:
+  slide:
+    type: File
+    inputBinding:
+      position: 0
+    doc: "Path to SLIDEFILE in  OpenSlide tif format."
+  mask:
+    type: File?
+    inputBinding:
+      prefix: --mask
+    doc: "Path to MASKFILE in CAMELYON XML format."
+  second_scanner:
+    type: boolean?
+    inputBinding:
+      prefix: --second-scanner
+    doc: "Slides of the second scanner have different zoom levels, which will be set if this parameter is true."
+
+outputs:
+  tiles:
+    type: File
+    outputBinding:
+      glob: tiles.hdf5
+    doc: "HDF5 file containing tiles as numpy arrays generated from slide."
