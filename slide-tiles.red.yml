@@ -5214,7 +5214,7 @@ execution:
   settings:
     access:
       auth: {password: '{{agency_password}}', username: '{{agency_username}}'}
-      url: https://agency.f4.htw-berlin.de/cctest
+      url: https://agency.f4.htw-berlin.de/cc
     batchConcurrencyLimit: 16
     retryIfFailed: true
 redVersion: '6'

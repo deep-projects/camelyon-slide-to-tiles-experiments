@@ -66,7 +66,7 @@ red = {
         'engine': 'ccagency',
         'settings': {
             'access': {
-                'url': 'https://agency.f4.htw-berlin.de/cctest',
+                'url': 'https://agency.f4.htw-berlin.de/cc',
                 'auth': {
                     'username': '{{agency_username}}',
                     'password': '{{agency_password}}'
