@@ -57,7 +57,7 @@ red = {
         'engine': 'docker',
         'settings': {
             'image': {
-                'url': 'docker.io/deepprojects/camelyon-utils:0.1'
+                'url': 'docker.io/deepprojects/camelyon-utils:0.2'
             },
             'ram': 8192
         }

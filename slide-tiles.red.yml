@@ -5207,7 +5207,7 @@ cli:
 container:
   engine: docker
   settings:
-    image: {url: 'docker.io/deepprojects/camelyon-utils:0.1'}
+    image: {url: 'docker.io/deepprojects/camelyon-utils:0.2'}
     ram: 8192
 execution:
   engine: ccagency
