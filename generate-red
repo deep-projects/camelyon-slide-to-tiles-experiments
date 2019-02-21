@@ -18,7 +18,8 @@ with open('slide-tiles.cwl.yml') as f:
 
 #%%
 ssh_host = 'avocado01.f4.htw-berlin.de'
-ssh_setdir = '/data/ldap/camelyon/camelyon_new_downloaded_2019_02_06/CAMELYON16/'
+ssh_input_dir = '/data/ldap/histopathologic/original_read_only/camelyon/CAMELYON16_2019_02_06/training'
+ssh_output_dir = '/data/ldap/histopathologic/processed/camelyon/CAMELYON16_2019_02_06/camelyon_slide_to_tiles_experiments/training'
 
 # normal_086.tif does not exist in dataset
 # normal_144.tif cannot be processed
@@ -26,24 +27,24 @@ subsets = {
     'training': {
         'tumor': {
             'scanner1': {
-                'slides': ['training/tumor/tumor_{:03d}.tif'.format(i) for i in range(1, 71)],
-                'masks': ['training/lesion_annotations/tumor_{:03d}.xml'.format(i) for i in range(1, 71)],
-                'tiles': ['tiles/training/tumor_{:03d}.hdf5'.format(i) for i in range(1, 71)]
+                'slides': [os.path.join(ssh_input_dir, 'tumor/tumor_{:03d}.tif'.format(i)) for i in range(1, 71)],
+                'masks': [os.path.join(ssh_input_dir, 'lesion_annotations/tumor_{:03d}.xml'.format(i)) for i in range(1, 71)],
+                'tiles': [os.path.join(ssh_output_dir, 'tumor_{:03d}.hdf5'.format(i)) for i in range(1, 71)]
             },
             'scanner2': {
-                'slides': ['training/tumor/tumor_{:03d}.tif'.format(i) for i in range(71, 112)],
-                'masks': ['training/lesion_annotations/tumor_{:03d}.xml'.format(i) for i in range(71, 112)],
-                'tiles': ['tiles/training/tumor_{:03d}.hdf5'.format(i) for i in range(71, 112)]
+                'slides': [os.path.join(ssh_input_dir, 'tumor/tumor_{:03d}.tif'.format(i)) for i in range(71, 112)],
+                'masks': [os.path.join(ssh_input_dir, 'lesion_annotations/tumor_{:03d}.xml'.format(i)) for i in range(71, 112)],
+                'tiles': [os.path.join(ssh_output_dir, 'tumor_{:03d}.hdf5'.format(i)) for i in range(71, 112)]
             }
         },
         'normal': {
             'scanner1': {
-                'slides': ['training/normal/normal_{:03d}.tif'.format(i) for i in range(1, 101) if i != 86],
-                'tiles': ['tiles/training/normal_{:03d}.hdf5'.format(i) for i in range(1, 101) if i != 86]
+                'slides': [os.path.join(ssh_input_dir, 'normal/normal_{:03d}.tif'.format(i)) for i in range(1, 101) if i != 86],
+                'tiles': [os.path.join(ssh_output_dir, 'normal_{:03d}.hdf5'.format(i)) for i in range(1, 101) if i != 86]
             },
             'scanner2': {
-                'slides': ['training/normal/normal_{:03d}.tif'.format(i) for i in range(101, 161) if i != 144],
-                'tiles': ['tiles/training/normal_{:03d}.hdf5'.format(i) for i in range(101, 161) if i != 144]
+                'slides': [os.path.join(ssh_input_dir, 'normal/normal_{:03d}.tif'.format(i)) for i in range(101, 161) if i != 144],
+                'tiles': [os.path.join(ssh_output_dir, 'normal_{:03d}.hdf5'.format(i)) for i in range(101, 161) if i != 144]
             }
         }
     }
@@ -99,7 +100,7 @@ for subset_name, subset in subsets.items():
                                     'host': ssh_host,
                                     'username': '{{cbmi_username}}',
                                     'password': '{{cbmi_password}}',
-                                    'fileDir': os.path.join(ssh_setdir, slide_dir),
+                                    'fileDir': slide_dir,
                                     'fileName': slide_name
                                 }
                             }
@@ -112,7 +113,7 @@ for subset_name, subset in subsets.items():
                                     'host': ssh_host,
                                     'username': '{{cbmi_username}}',
                                     'password': '{{cbmi_password}}',
-                                    'fileDir': os.path.join(ssh_setdir, mask_dir),
+                                    'fileDir': mask_dir,
                                     'fileName': mask_name
                                 }
                             }
@@ -130,7 +131,7 @@ for subset_name, subset in subsets.items():
                                     'host': ssh_host,
                                     'username': '{{cbmi_username}}',
                                     'password': '{{cbmi_password}}',
-                                    'fileDir': os.path.join(ssh_setdir, tile_dir),
+                                    'fileDir': tile_dir,
                                     'fileName': tile_name
                                 }
                             }
@@ -151,7 +152,7 @@ for subset_name, subset in subsets.items():
                                     'host': ssh_host,
                                     'username': '{{cbmi_username}}',
                                     'password': '{{cbmi_password}}',
-                                    'fileDir': os.path.join(ssh_setdir, slide_dir),
+                                    'fileDir': slide_dir,
                                     'fileName': slide_name
                                 }
                             }
@@ -169,7 +170,7 @@ for subset_name, subset in subsets.items():
                                     'host': ssh_host,
                                     'username': '{{cbmi_username}}',
                                     'password': '{{cbmi_password}}',
-                                    'fileDir': os.path.join(ssh_setdir, tile_dir),
+                                    'fileDir': tile_dir,
                                     'fileName': tile_name
                                 }
                             }
