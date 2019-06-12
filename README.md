@@ -1,6 +1,6 @@
 # Camelyon Slide to Tiles Experiments
 
-This repository contains a reproducible RED experiment. This experiment can be reproduced with CC-FAICE or CC-Agency version 6 of the [Curious Containers](https://www.curious-containers.cc/) project.
+This repository contains a reproducible RED experiment. This experiment can be reproduced with CC-FAICE or CC-Agency version 7 of the [Curious Containers](https://www.curious-containers.cc/) project.
 
 The experiments read image slides from the CAMELYON16 database via OpenSlide to create image tiles for tumor and normal tissue. Tiles are saved in one HDF5 file per slide. It is used as data preparation step of machine learning tasks.
 
@@ -18,7 +18,7 @@ The experiments read image slides from the CAMELYON16 database via OpenSlide to 
 Running the requires access to compute resources of CBMI - HTW Berlin. If you had access, you could run the original experiment as follows.
 
 ```bash
-pip3 install --user --upgrade cc-faice==6.*
+pip3 install --user --upgrade cc-faice==7.*
 faice exec slide-tiles.red.yml
 ```
 

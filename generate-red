@@ -51,14 +51,14 @@ subsets = {
 }
 
 red = {
-    'redVersion': '6',
+    'redVersion': '7',
     'cli': cwl,
     'batches': [],
     'container': {
         'engine': 'docker',
         'settings': {
             'image': {
-                'url': 'docker.io/deepprojects/camelyon-utils:0.2'
+                'url': 'docker.io/deepprojects/camelyon-utils:0.2.1'
             },
             'ram': 8192
         }
@@ -98,10 +98,11 @@ for subset_name, subset in subsets.items():
                                 'command': 'red-connector-ssh',
                                 'access': {
                                     'host': ssh_host,
-                                    'username': '{{cbmi_username}}',
-                                    'password': '{{cbmi_password}}',
-                                    'fileDir': slide_dir,
-                                    'fileName': slide_name
+                                    'auth': {
+                                        'username': '{{cbmi_username}}',
+                                        'password': '{{cbmi_password}}'
+                                    },
+                                    'filePath': os.path.join(slide_dir, slide_name)
                                 }
                             }
                         },
@@ -111,10 +112,11 @@ for subset_name, subset in subsets.items():
                                 'command': 'red-connector-ssh',
                                 'access': {
                                     'host': ssh_host,
-                                    'username': '{{cbmi_username}}',
-                                    'password': '{{cbmi_password}}',
-                                    'fileDir': mask_dir,
-                                    'fileName': mask_name
+                                    'auth': {
+                                        'username': '{{cbmi_username}}',
+                                        'password': '{{cbmi_password}}'
+                                    },
+                                    'filePath': os.path.join(mask_dir, mask_name)
                                 }
                             }
                         }
@@ -129,10 +131,11 @@ for subset_name, subset in subsets.items():
                                 'command': 'red-connector-ssh',
                                 'access': {
                                     'host': ssh_host,
-                                    'username': '{{cbmi_username}}',
-                                    'password': '{{cbmi_password}}',
-                                    'fileDir': tile_dir,
-                                    'fileName': tile_name
+                                    'auth': {
+                                        'username': '{{cbmi_username}}',
+                                        'password': '{{cbmi_password}}'
+                                    },
+                                    'filePath': os.path.join(tile_dir, tile_name)
                                 }
                             }
                         }
@@ -150,10 +153,11 @@ for subset_name, subset in subsets.items():
                                 'command': 'red-connector-ssh',
                                 'access': {
                                     'host': ssh_host,
-                                    'username': '{{cbmi_username}}',
-                                    'password': '{{cbmi_password}}',
-                                    'fileDir': slide_dir,
-                                    'fileName': slide_name
+                                    'auth': {
+                                        'username': '{{cbmi_username}}',
+                                        'password': '{{cbmi_password}}'
+                                    },
+                                    'filePath': os.path.join(slide_dir, slide_name)
                                 }
                             }
                         }
@@ -168,10 +172,11 @@ for subset_name, subset in subsets.items():
                                 'command': 'red-connector-ssh',
                                 'access': {
                                     'host': ssh_host,
-                                    'username': '{{cbmi_username}}',
-                                    'password': '{{cbmi_password}}',
-                                    'fileDir': tile_dir,
-                                    'fileName': tile_name
+                                    'auth': {
+                                        'username': '{{cbmi_username}}',
+                                        'password': '{{cbmi_password}}'
+                                    },
+                                    'filePath': os.path.join(tile_dir, tile_name)
                                 }
                             }
                         }
